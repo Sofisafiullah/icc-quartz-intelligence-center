@@ -1,0 +1,13 @@
+{
+  "name": "icc-quartz-intelligence-center-test",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.16.3"
+  }
+}
