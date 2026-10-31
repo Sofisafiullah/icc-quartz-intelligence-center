@@ -88,14 +88,10 @@
         </div>
         <button id="originRefreshBtn">↻ <span>Sync Origin Imports</span></button>
       </div>
-      <div class="origin-cards" id="originCards"><div class="origin-card"><span>PHILIPPINES</span><strong>—</strong><small>M² · latest month</small></div><div class="origin-card"><span>CAMBODIA</span><strong>—</strong><small>M² · latest month</small></div><div class="origin-card"><span>SOUTH KOREA</span><strong>—</strong><small>M² · latest month</small></div><div class="origin-card"><span>COMBINED</span><strong>—</strong><small>M² · latest month</small></div></div>
-      <div class="table-wrap">
-        <table class="origin-table"><thead id="originHead"><tr><th>Month</th><th>Philippines</th><th>Cambodia</th><th>South Korea</th><th>Combined</th></tr></thead>
-        <tbody id="originBody"><tr><td colspan="5">Loading Census data…</td></tr></tbody></table>
-      </div>
-      <h3 class="origin-subhead">Quarterly origin consumption <span>Calendar quarters · M²</span></h3>
-      <div class="table-wrap"><table class="origin-table"><thead><tr><th>Calendar quarter</th><th>Philippines</th><th>Cambodia</th><th>South Korea</th><th>Combined</th></tr></thead><tbody id="originQuarterBody"><tr><td colspan="5">Loading quarterly totals…</td></tr></tbody></table></div>
-      <div class="origin-foot">Measure: <b>Imports for Consumption</b> · Quantity field: <b>CON_QY1_MO</b> · Values are M², not dollars. Source: U.S. Census Bureau International Trade API.</div>
+      <div class="origin-cards" id="originCards"><div class="origin-card"><span>PHILIPPINES</span><strong>—</strong><small>M² · latest available month</small></div><div class="origin-card"><span>CAMBODIA</span><strong>—</strong><small>M² · latest available month</small></div><div class="origin-card"><span>SOUTH KOREA</span><strong>—</strong><small>M² · latest available month</small></div><div class="origin-card"><span>COMBINED</span><strong>—</strong><small>M² · latest available month</small></div></div>
+      <div class="origin-monthly-intro"><b>Monthly history · January 2026 to latest month</b><span>Each country is tracked separately. Missing values mean Census data has not been returned yet—not zero imports.</span></div>
+      <div id="originCountryTables" class="origin-country-tables"><p>Loading monthly Census history…</p></div>
+      <div class="origin-foot">Measure: <b>U.S. Imports for Consumption</b> · Quantity field: <b>CON_QY1_MO</b> · Values are M², not dollars. HTS codes: <b>6810990020</b> and <b>6810990040</b>. Source: U.S. Census Bureau International Trade API. This measures U.S. imports by country of origin, not domestic consumption within those countries.</div>
     </section>
 
     <section id="history" class="glass panel table-panel">

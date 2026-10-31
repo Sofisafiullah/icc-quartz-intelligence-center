@@ -38,31 +38,30 @@ function renderOrigin(payload){
   const rows=payload.monthly||[];
   const countries=payload.countries||['Philippines','Cambodia','South Korea'];
   const hts=payload.hts||['6810990020','6810990040'];
-  const fmtM2=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const latest=rows[0];
-  const head=$('originHead');
-  if(head) head.innerHTML=`<tr><th>Month</th>${countries.map(c=>`<th>${c}</th>`).join('')}<th>Combined</th>${countries.flatMap(c=>hts.map(code=>`<th>${code} ${c}</th>`)).join('')}</tr>`;
+  const fmtM2=n=>n===null||n===undefined?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const latest=payload.latest_available||rows.find(r=>r.status==='Available');
   const cards=$('originCards');
   if(cards){
-    cards.innerHTML=countries.map((country,i)=>`<div class="origin-card"><span>${country.toUpperCase()}</span><strong>${latest?fmtM2(latest[country]):'—'}</strong><small>M² · latest month</small></div>`).join('')+
-      `<div class="origin-card"><span>COMBINED</span><strong>${latest?fmtM2(latest.combined):'—'}</strong><small>M² · latest month</small></div>`;
+    cards.innerHTML=countries.map(country=>`<div class="origin-card"><span>${country.toUpperCase()}</span><strong>${latest?fmtM2(latest[country]):'—'}</strong><small>M² · ${latest?latest.month:'no data yet'}</small></div>`).join('')+
+      `<div class="origin-card"><span>COMBINED</span><strong>${latest?fmtM2(latest.combined):'—'}</strong><small>M² · ${latest?latest.month:'no data yet'}</small></div>`;
   }
-  const tbody=$('originBody');
-  const cols=1+countries.length+1+(countries.length*hts.length);
-  if(!rows.length){tbody.innerHTML=`<tr><td colspan="${cols}">No Census origin-import data yet. Run Sync Origin Imports.</td></tr>`;return}
-  tbody.innerHTML=rows.map(r=>{
-    const b=r.by_hts||{};
-    const countryCells=countries.map(c=>`<td>${fmtM2(r[c])}</td>`).join('');
-    const htsCells=countries.flatMap(c=>hts.map(code=>`<td>${fmtM2(b[`${c}_${code}`])}</td>`)).join('');
-    return `<tr><td><b>${r.month}</b></td>${countryCells}<td><b>${fmtM2(r.combined)}</b></td>${htsCells}</tr>`;
+  const host=$('originCountryTables');
+  if(!host)return;
+  if(!rows.length){host.innerHTML='<p>No monthly Census history returned yet.</p>';return;}
+  host.innerHTML=countries.map(country=>{
+    const body=rows.map(r=>{
+      const by=r.by_hts||{};
+      const a=by[`${country}_${hts[0]}`], b=by[`${country}_${hts[1]}`];
+      const total=(a!==null&&a!==undefined)||(b!==null&&b!==undefined)?Number(a||0)+Number(b||0):null;
+      const status=total===null?'Pending':'Available';
+      return `<tr><td><b>${r.month}</b></td><td>${fmtM2(a)}</td><td>${fmtM2(b)}</td><td><b>${fmtM2(total)}</b></td><td><span class="origin-status ${status==='Available'?'available':'pending'}">${status}</span></td></tr>`;
+    }).join('');
+    return `<section class="origin-country-block"><h3>${country}<span>Monthly imports · M²</span></h3><div class="table-wrap"><table class="origin-table"><thead><tr><th>Month</th><th>HTS ${hts[0]}</th><th>HTS ${hts[1]}</th><th>Country monthly total</th><th>Data status</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
   }).join('');
-  const qbody=$('originQuarterBody');
-  const quarters=payload.quarterly||[];
-  if(qbody) qbody.innerHTML=quarters.length?quarters.map(q=>`<tr><td><b>${q.quarter}</b></td>${countries.map(c=>`<td>${fmtM2(q[c])}</td>`).join('')}<td><b>${fmtM2(q.combined)}</b></td></tr>`).join(''):`<tr><td colspan="5">No quarterly totals available yet.</td></tr>`;
 }
 async function loadOrigin(){
   try{const o=await api('/api/origin-imports');renderOrigin(o)}
-  catch(e){console.error(e);const b=$('originBody');if(b)b.innerHTML='<tr><td colspan="12">Origin import data unavailable.</td></tr>'}
+  catch(e){console.error(e);const b=$('originBody');if(b)b.innerHTML='<p>Origin import data unavailable. Check the API logs.</p>'}
 }
 async function refreshOrigin(){
   const b=$('originRefreshBtn'); if(!b)return;
