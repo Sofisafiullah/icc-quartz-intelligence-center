@@ -55,9 +55,24 @@
 - `POST /api/refresh` — scan and archive CBP reports
 - `POST /api/backfill` — explicit historical CBP sync
 - `GET /api/origin-imports` — monthly and calendar-quarter origin-import summaries
-- `POST /api/origin-refresh` — synchronize Census data from August 2026 through the current month
+- `POST /api/origin-refresh` — synchronize one completed month per request (JSON body: `{\"month\":\"YYYY-MM\"}`)
 - `/api/cron` — weekly CBP and Census sync
 
 ## Origin country codes
 
 The Census Bureau's official country-code list identifies Cambodia as `5550`, Philippines as `5650`, and South Korea as `5800`. Source: https://www2.census.gov/programs-surveys/trade/schedules/c/countrycode.html
+
+
+## Screenshot-recovered CBP history (TEST only)
+The one-time `POST /api/restore-cbp-screenshot-history` endpoint restores the 11 report rows transcribed from the user's Oct. 31, 2026 screenshot. It requires `Authorization: Bearer <CRON_SECRET>`, inserts only missing report dates, and never updates an existing row. Restored rows are tagged `source_type=SCREENSHOT` and `validation_status=RECOVERED FROM SCREENSHOT`; the dashboard labels their source accordingly. Normal CBP PDF rows remain tagged `CBP_PDF`.
+
+After the one-time restoration is complete, remove `api/restore-cbp-screenshot-history.js` from the TEST repository in a follow-up commit.
+
+
+## v1.3 — Reliable monthly Census synchronization
+- Census sync now processes one completed month per Vercel request instead of requesting every month in one long-running function.
+- The dashboard shows month-by-month progress and always resets the Sync button when a request finishes or fails.
+- Complete historical months are skipped; incomplete months are retried, and the latest available month is rechecked for Census revisions.
+- The current, incomplete calendar month is not queried. The weekly cron checks only the two most recent completed months; manual sync fills older missing months.
+- Each Census request has a short timeout; a slow or unavailable Census response is reported as skipped/error rather than leaving the UI waiting indefinitely.
+- Origin-import rows continue to upsert only in the isolated test database. CBP weekly history is untouched.
