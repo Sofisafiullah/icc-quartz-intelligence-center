@@ -80,7 +80,7 @@ async function refreshOrigin(){
     for(let i=0;i<uniqueMonths.length;i++){
       const monthKey=uniqueMonths[i];
       b.textContent=`↻ Syncing Census imports · ${i+1}/${uniqueMonths.length} (${monthKey})`;
-      const r=await api('/api/origin-refresh',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({month:monthKey}),signal:AbortSignal.timeout(20000)});
+      const r=await api('/api/origin-refresh',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({month:monthKey}),signal:AbortSignal.timeout(65000)});
       totalSaved+=Number(r.records_saved||0); checked++;
       skipped+=Array.isArray(r.skipped)?r.skipped.length:0;
       failures+=Number(r.errors||0);
